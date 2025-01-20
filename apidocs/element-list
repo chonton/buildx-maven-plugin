@@ -1,0 +1,8 @@
+org.honton.chas.buildx_maven_plugin
+org.honton.chas.buildx.maven.plugin
+org.honton.chas.buildx.maven.plugin.buildx
+org.honton.chas.buildx.maven.plugin.cmdline
+org.honton.chas.buildx.maven.plugin.config
+org.honton.chas.buildx.maven.plugin.containerfile
+org.honton.chas.buildx.maven.plugin.login
+org.honton.chas.buildx.maven.plugin.push
