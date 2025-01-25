@@ -5,10 +5,14 @@ import org.apache.maven.plugins.annotations.Parameter;
 public abstract class Containerfile extends ImageGoal {
 
   /** Build instruction file, relative to context */
-  @Parameter public String containerFile;
+  @Parameter(property = "buildx.containerFile")
+  public String containerFile;
 
   /** Directory containing source content for build */
-  @Parameter(required = true, defaultValue = "${project.build.directory}/context")
+  @Parameter(
+      property = "buildx.context",
+      required = true,
+      defaultValue = "${project.build.directory}/context")
   public String context;
 
   protected String containerFile() {

@@ -25,7 +25,7 @@ public class ImageBuild extends Containerfile {
   public static final String BUILDX_MAVEN = "buildx-maven";
 
   /** Fully qualified image name containing registry prefix, repository name, and version */
-  @Parameter(required = true)
+  @Parameter(property = "buildx.image", required = true)
   protected String image;
 
   /** The os/arch of the built image */

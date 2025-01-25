@@ -35,12 +35,12 @@ element with an `<id>` element that matches the registry. If found, the `<userna
 
 ### Login Configuration from pom.xml
 
-|  Parameter | Required | Description                                            |
-|-----------:|:--------:|:-------------------------------------------------------|
-|   registry |    ✓     | Registry to authenticate with                          |
-|   password |          | If registry not found in settings.xml, use as password |
-|       skip |          | Skip login                                             |
-|   username |          | If registry not found in settings.xml, use as username |
+| Parameter | Required |        Property | Description                                            |
+|----------:|:--------:|----------------:|--------------------------------------------------------|
+|  registry |    ✓     | buildx.registry | Registry to authenticate with                          |
+|  password |          | buildx.password | If registry not found in settings.xml, use as password |
+|      skip |          |     buildx.skip | Skip login                                             |
+|  username |          | buildx.username | If registry not found in settings.xml, use as username |
 
 ## Containerfile Goal
 
@@ -52,22 +52,22 @@ information about Containerfile syntax.
 
 ### Containerfile Configuration
 
-|     Parameter | Description                                                                            |
-|--------------:|:---------------------------------------------------------------------------------------|
-|           cli | Container command, default is **docker**. (**podman** is supported)                    |
-| containerFile | Instruction file relative to context, default is **Dockerfile** (or **Containerfile**) |
-|       context | Directory with build content, default is `${project.build.directory}/context`          |
-|      contexts | Map of additional context names to locations                                           |                                                   |
-|           cmd | Default [ShellOrExec Config](#shellorexec-config) command                              |
-|    entrypoint | Default [ShellOrExec Config](#shellorexec-config) entrypoint                           |
-|          from | Base image for subsequent instructions                                                 |
-|        layers | List of [Layer Config](#layer-config) to apply                                         |
-|        labels | Map of labels to apply to image                                                        |
-|           env | Map of environment variables that are set when container runs                          |
-|          user | User\[:Group] that runs inside the container. May be uid or name                       |
-|        expose | List of ports that the container will expose                                           |
-|       volumes | List of locations in the image filesystem for external mounts                          |
-|       workDir | Working directory for the container's process                                          |
+|     Parameter |             Property | Description                                                                            |
+|--------------:|---------------------:|:---------------------------------------------------------------------------------------|
+|           cli |           buildx.cli | Container command, default is **docker**. (**podman** is supported)                    |
+| containerFile | buildx.containerFile | Instruction file relative to context, default is **Dockerfile** (or **Containerfile**) |
+|       context |       buildx.context | Directory with build content, default is `${project.build.directory}/context`          |
+|      contexts |                      | Map of additional context names to locations                                           |                                                                                         |
+|           cmd |           buildx.cmd | Default [ShellOrExec Config](#shellorexec-config) command                              |
+|    entrypoint |                      | Default [ShellOrExec Config](#shellorexec-config) entrypoint                           |
+|          from |          buildx.from | Base image for subsequent instructions                                                 |
+|        layers |                      | List of [Layer Config](#layer-config) to apply                                         |
+|        labels |                      | Map of labels to apply to image                                                        |
+|           env |                      | Map of environment variables that are set when container runs                          |
+|          user |                      | User\[:Group] that runs inside the container. May be uid or name                       |
+|        expose |                      | List of ports that the container will expose                                           |
+|       volumes |                      | List of locations in the image filesystem for external mounts                          |
+|       workDir |                      | Working directory for the container's process                                          |
 
 ### Layer Config
 
@@ -92,20 +92,20 @@ default to the **package** phase. This goal executes `docker build buildx`.
 
 ### Build Configuration
 
-|      Parameter | Description                                                                            |
-|---------------:|:---------------------------------------------------------------------------------------|
-| buildArguments | Map of build arguments                                                                 |
-|        builder | Name of an already defined docker buildx builder                                       |
-|            cli | Container command, default is **docker**. (**podman** is supported)                    |
-|  containerFile | Instruction file relative to context, default is **Dockerfile** (or **Containerfile**) |
-|        context | Directory with build content, default is `${project.build.directory}/context`          |
-|       contexts | Map of additional context names to locations                                           |
-|          image | Fully qualified image name; must include *registry/repository:version*                 |
-|           load | If set to true, load the local docker image cache with resulting image                 |
-|      platforms | List of platforms.  Each element may contain comma separated *os/arch*                 |
-|     provenance | Level of provenance attestation to add. May be false, min, or max                      |
-|           sbom | Add software bill of materials attestation to add                                      |
-|           skip | Skip build                                                                             |
+|      Parameter |                Property | Description                                                                            |
+|---------------:|------------------------:|:---------------------------------------------------------------------------------------|
+| buildArguments |                         | Map of build arguments                                                                 |
+|        builder |          buildx.builder | Name of an already defined docker buildx builder                                       |
+|            cli |              buildx.cli | Container command, default is **docker**. (**podman** is supported)                    |
+|  containerFile |    buildx.containerFile | Instruction file relative to context, default is **Dockerfile** (or **Containerfile**) |
+|        context |          buildx.context | Directory with build content, default is `${project.build.directory}/context`          |
+|       contexts |                         | Map of additional context names to locations                                           |
+|          image |            buildx.image | Fully qualified image name; must include *registry/repository:version*                 |
+|           load |             buildx.load | If set to true, load the local docker image cache with resulting image                 |
+|      platforms |                         | List of platforms.  Each element may contain comma separated *os/arch*                 |
+|     provenance |       buildx.provenance | Level of provenance attestation to add. May be false, min, or max                      |
+|           sbom |             buildx.sbom | Add software bill of materials attestation to add                                      |
+|           skip |             buildx.skip | Skip build                                                                             |
 
 ## Push Goal
 
@@ -114,10 +114,10 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
 
 ### Push Configuration
 
-| Parameter | Description                                                      |
-|----------:|:-----------------------------------------------------------------|
-|     image | The fully qualified image name, with registry/repository:version |
-|      skip | Skip push                                                        |
+| Parameter |     Property | Description                                                      |
+|----------:|-------------:|:-----------------------------------------------------------------|
+|     image | buildx.image | The fully qualified image name, with registry/repository:version |
+|      skip |  buildx.skip | Skip push                                                        |
 
 # Examples
 
@@ -136,7 +136,7 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
       <plugin>
         <groupId>org.honton.chas</groupId>
         <artifactId>buildx-maven-plugin</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.7</version>
       </plugin>
     </plugins>
   </pluginManagement>

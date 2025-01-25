@@ -18,7 +18,7 @@ import org.honton.chas.buildx.maven.plugin.config.ShellOrExecConfig;
 public class CreateContainerfile extends Containerfile {
 
   /** Base image for subsequent instructions */
-  @Parameter(required = true)
+  @Parameter(property = "buildx.from", required = true)
   String from;
 
   /** Default command / parameters for the executing container */
@@ -37,7 +37,8 @@ public class CreateContainerfile extends Containerfile {
   @Parameter Map<String, String> env;
 
   /** The User[:Group] that runs inside the container. May be uid or name. */
-  @Parameter String user;
+  @Parameter(property = "buildx.user")
+  String user;
 
   /** List of ports that the container will expose */
   @Parameter List<String> expose;
@@ -46,7 +47,8 @@ public class CreateContainerfile extends Containerfile {
   @Parameter List<String> volumes;
 
   /** Working directory for the container's process */
-  @Parameter String workdir;
+  @Parameter(property = "buildx.workdir")
+  String workdir;
 
   @Override
   protected void doExecute() throws IOException {

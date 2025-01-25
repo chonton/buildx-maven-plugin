@@ -4,7 +4,7 @@
 
   <groupId>org.honton.chas</groupId>
   <artifactId>buildx-maven-plugin</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   <packaging>maven-plugin</packaging>
 
   <name>Image Builder Maven Plugin</name>

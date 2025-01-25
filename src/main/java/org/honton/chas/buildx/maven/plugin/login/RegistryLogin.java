@@ -20,14 +20,16 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 public class RegistryLogin extends ImageGoal {
 
   /** Registry location; used to look up the credentials in settings.xml and locate the registry */
-  @Parameter(required = true)
+  @Parameter(property = "buildx.registry", required = true)
   String registry;
 
   /** The username for the registry if no entry in settings.xml matches registry name */
-  @Parameter String username;
+  @Parameter(property = "buildx.username")
+  String username;
 
   /** The password for the registry if no entry in settings.xml matches registry name */
-  @Parameter String password;
+  @Parameter(property = "buildx.password")
+  String password;
 
   @Component(role = SecDispatcher.class, hint = "default")
   private SecDispatcher securityDispatcher;
