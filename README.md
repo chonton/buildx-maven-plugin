@@ -114,10 +114,11 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
 
 ### Push Configuration
 
-| Parameter |     Property | Description                                                      |
-|----------:|-------------:|:-----------------------------------------------------------------|
-|     image | buildx.image | The fully qualified image name, with registry/repository:version |
-|      skip |  buildx.skip | Skip push                                                        |
+| Parameter |        Property | Description                                                      |
+|----------:|----------------:|:-----------------------------------------------------------------|
+|     image |    buildx.image | The fully qualified image name, with registry/repository:version |
+|      skip |     buildx.skip | Skip push                                                        |
+|  skipPush | buildx.skipPush | buildx.skip                                                      |                                         |
 
 # Examples
 
@@ -136,7 +137,7 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
       <plugin>
         <groupId>org.honton.chas</groupId>
         <artifactId>buildx-maven-plugin</artifactId>
-        <version>0.0.7</version>
+        <version>0.0.8</version>
       </plugin>
     </plugins>
   </pluginManagement>

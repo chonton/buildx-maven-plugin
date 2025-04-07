@@ -161,38 +161,6 @@ public class ImageBuild extends Containerfile {
     }
   }
 
-  /*
-  private void hookCleanup(String builderName) {
-    MavenExecutionRequest request = session.getRequest();
-    ExecutionListener originalListener = request.getExecutionListener();
-    request.setExecutionListener(
-        (ExecutionListener)
-            Proxy.newProxyInstance(
-                Thread.currentThread().getContextClassLoader(),
-                new Class[] {ExecutionListener.class},
-                (proxy, method, args) -> {
-                  if (method.getName().equals("sessionEnded")) {
-                    cleanup(builderName);
-                  }
-                  if (originalListener != null) {
-                    return method.invoke(originalListener, args);
-                  }
-                  switch (method.getName()) {
-                    case "equals":
-                      return false;
-                    case "hashCode":
-                      return 0;
-                    default:
-                      return null;
-                  }
-                }));
-  }
-
-  private void cleanup(String builderName) throws MojoExecutionException {
-    executeCommand(new Buildx<>(this).addCmd("rm").addParameter(builderName), true);
-  }
-  */
-
   private void loadImage(String builderName, String ctxDir, Map<String, String> additional)
       throws MojoExecutionException {
     BuildxBuild buildCmd =
