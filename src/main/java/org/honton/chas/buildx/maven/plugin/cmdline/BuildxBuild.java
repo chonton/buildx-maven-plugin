@@ -58,7 +58,7 @@ public class BuildxBuild extends Buildx<BuildxBuild> {
 
   public BuildxBuild addPlatformsAndImage(List<String> platforms, String image) {
     String param = addPlatforms(platforms) && isPodman ? "--manifest" : "--tag";
-    addParameter(param, image);
+    Arrays.stream(image.split(",")).forEach(i -> addParameter(param, i));
     return this;
   }
 

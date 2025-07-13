@@ -92,20 +92,20 @@ default to the **package** phase. This goal executes `docker build buildx`.
 
 ### Build Configuration
 
-|      Parameter |                Property | Description                                                                            |
-|---------------:|------------------------:|:---------------------------------------------------------------------------------------|
-| buildArguments |                         | Map of build arguments                                                                 |
-|        builder |          buildx.builder | Name of an already defined docker buildx builder                                       |
-|            cli |              buildx.cli | Container command, default is **docker**. (**podman** is supported)                    |
-|  containerFile |    buildx.containerFile | Instruction file relative to context, default is **Dockerfile** (or **Containerfile**) |
-|        context |          buildx.context | Directory with build content, default is `${project.build.directory}/context`          |
-|       contexts |                         | Map of additional context names to locations                                           |
-|          image |            buildx.image | Fully qualified image name; must include *registry/repository:version*                 |
-|           load |             buildx.load | If set to true, load the local docker image cache with resulting image                 |
-|      platforms |                         | List of platforms.  Each element may contain comma separated *os/arch*                 |
-|     provenance |       buildx.provenance | Level of provenance attestation to add. May be false, min, or max                      |
-|           sbom |             buildx.sbom | Add software bill of materials attestation to add                                      |
-|           skip |             buildx.skip | Skip build                                                                             |
+|      Parameter |                Property | Description                                                                                |
+|---------------:|------------------------:|:-------------------------------------------------------------------------------------------|
+| buildArguments |                         | Map of build arguments                                                                     |
+|        builder |          buildx.builder | Name of an already defined docker buildx builder                                           |
+|            cli |              buildx.cli | Container command, default is **docker**. (**podman** is supported)                        |
+|  containerFile |    buildx.containerFile | Instruction file relative to context, default is **Dockerfile** (or **Containerfile**)     |
+|        context |          buildx.context | Directory with build content, default is `${project.build.directory}/context`              |
+|       contexts |                         | Map of additional context names to locations                                               |
+|          image |            buildx.image | Comma separated, fully qualified image name(s); must include *registry/repository:version* |
+|           load |             buildx.load | If set to true, load the local docker image cache with resulting image                     |
+|      platforms |                         | List of platforms.  Each element may contain comma separated *os/arch*                     |
+|     provenance |       buildx.provenance | Level of provenance attestation to add. May be false, min, or max                          |
+|           sbom |             buildx.sbom | Add software bill of materials attestation to add                                          |
+|           skip |             buildx.skip | Skip build                                                                                 |
 
 ## Push Goal
 
@@ -114,11 +114,11 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
 
 ### Push Configuration
 
-| Parameter |        Property | Description                                                      |
-|----------:|----------------:|:-----------------------------------------------------------------|
-|     image |    buildx.image | The fully qualified image name, with registry/repository:version |
-|      skip |     buildx.skip | Skip push                                                        |
-|  skipPush | buildx.skipPush | buildx.skip                                                      |                                         |
+| Parameter |        Property | Description                                                                                |
+|----------:|----------------:|:-------------------------------------------------------------------------------------------|
+|     image |    buildx.image | Comma separated, fully qualified image name(s), each in form *registry/repository:version* |
+|      skip |     buildx.skip | Skip push                                                                                  |
+|  skipPush | buildx.skipPush | buildx.skip                                                                                |                                         |
 
 # Examples
 
@@ -137,7 +137,7 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
       <plugin>
         <groupId>org.honton.chas</groupId>
         <artifactId>buildx-maven-plugin</artifactId>
-        <version>0.0.8</version>
+        <version>0.0.9</version>
       </plugin>
     </plugins>
   </pluginManagement>
