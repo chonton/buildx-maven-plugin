@@ -1,10 +1,10 @@
 package org.honton.chas.buildx.maven.plugin.cmdline;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.honton.chas.buildx.maven.plugin.buildx.ImageBuild;
 
@@ -23,12 +23,29 @@ public class BuildxBuild extends Buildx<BuildxBuild> {
     addBuildArgs(goal.buildArguments);
   }
 
+  private static Stream<String> splitList(List<String> stringList) {
+    return stringList.stream()
+        .flatMap(p -> p != null ? Arrays.stream(p.split(",")) : Stream.of())
+        .map(String::strip)
+        .filter(p -> !p.isEmpty());
+  }
+
+  private static String removeTrailingSlash(String registry) {
+    int idxOfLastChar = registry.length() - 1;
+    return registry.charAt(idxOfLastChar) == '/' ? registry.substring(0, idxOfLastChar) : registry;
+  }
+
+  private static String removeLeadingSlash(String image) {
+    return image.charAt(0) == '/' ? image.substring(1) : image;
+  }
+
+  private static String fqin(String image, String registry) {
+    return removeTrailingSlash(registry) + '/' + removeLeadingSlash(image);
+  }
+
   public BuildxBuild addBuildArgs(Map<String, String> buildArguments) {
     if (buildArguments != null) {
-      buildArguments.forEach(
-          (k, v) -> {
-            addParameter("--build-arg", k + "=" + v);
-          });
+      buildArguments.forEach((k, v) -> addParameter("--build-arg", k + "=" + v));
     }
     return this;
   }
@@ -41,31 +58,41 @@ public class BuildxBuild extends Buildx<BuildxBuild> {
    */
   private boolean addPlatforms(List<String> platforms) {
     if (platforms != null) {
-      Set<String> set = new LinkedHashSet<>();
-      platforms.stream()
-          .flatMap(p -> p != null ? Arrays.stream(p.split(",")) : Stream.of())
-          .map(String::strip)
-          .filter(p -> !p.isEmpty())
-          .forEach(set::add);
-
-      if (!set.isEmpty()) {
-        addParameter("--platform", String.join(",", set));
-        return set.size() > 1;
+      String platformParam = splitList(platforms).collect(Collectors.joining(","));
+      if (!platformParam.isEmpty()) {
+        addParameter("--platform", platformParam);
+        return true;
       }
     }
     return false;
   }
 
-  public BuildxBuild addPlatformsAndImage(List<String> platforms, String image) {
+  public BuildxBuild addPlatformsAndImage(
+      List<String> platforms, List<String> registries, String image) {
     String param = addPlatforms(platforms) && isPodman ? "--manifest" : "--tag";
-    Arrays.stream(image.split(",")).forEach(i -> addParameter(param, i));
+    addImages(param, registries, image);
     return this;
   }
 
-  public BuildxBuild addPlatformAndImage(String platform, String image) {
+  public BuildxBuild addPlatformAndImage(String platform, List<String> registries, String image) {
     addParameter("--platform", platform);
-    addParameter("--tag", image);
+    addImages("--tag", registries, image);
     return this;
+  }
+
+  private void addImages(String param, List<String> registries, String image) {
+    AtomicBoolean needTag = new AtomicBoolean(true);
+    if (registries != null) {
+      splitList(registries)
+          .forEach(
+              registry -> {
+                addParameter(param, fqin(image, registry));
+                needTag.set(false);
+              });
+    }
+    if (needTag.get()) {
+      addParameter(param, image);
+    }
   }
 
   public BuildxBuild addContainerfileAndCtx(

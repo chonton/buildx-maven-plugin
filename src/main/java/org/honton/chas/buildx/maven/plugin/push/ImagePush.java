@@ -22,7 +22,7 @@ public class ImagePush extends ImageBuild {
     } else {
       BuildxBuild buildCmd =
           new BuildxBuild(this, builder)
-              .addPlatformsAndImage(platforms, image)
+              .addPlatformsAndImage(platforms, registries, image)
               .addParameter("--output", "type=registry")
               .addContainerfileAndCtx(containerFile, ctxDir(), contexts());
       executeCommand(buildCmd, true);

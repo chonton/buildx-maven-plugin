@@ -24,27 +24,11 @@ public class ImageBuild extends Containerfile {
 
   public static final String BUILDX_MAVEN = "buildx-maven";
 
-  /** Fully qualified image name containing registry prefix, repository name, and version */
-  @Parameter(property = "buildx.image", required = true)
-  protected String image;
-
-  /** The os/arch of the built image */
-  @Parameter(property = "buildx.platforms")
-  protected List<String> platforms;
-
   /** Map of build arguments */
   @Parameter public Map<String, String> buildArguments;
 
-  /** The name of an existing builder to use */
-  @Parameter(property = "buildx.builder", defaultValue = BUILDX_MAVEN)
-  protected String builder;
-
   /** Map of context name to location */
   @Parameter public Map<String, String> contexts;
-
-  /** Load resulting image into local image cache */
-  @Parameter(property = "buildx.load", defaultValue = "true")
-  boolean load;
 
   /** Include provenance attestation. Acceptable values are "min", "max", "false" */
   @Parameter(property = "buildx.provenance")
@@ -53,6 +37,29 @@ public class ImageBuild extends Containerfile {
   /** Include software bill of materials attestation. */
   @Parameter(property = "buildx.sbom", defaultValue = "false")
   public boolean sbom;
+
+  /** Fully qualified image name containing registry prefix, repository name, and version */
+  @Parameter(property = "buildx.image", required = true)
+  protected String image;
+
+  /**
+   * For building/pushing to multiple registries. When used, do not include registry prefix in image
+   * value
+   */
+  @Parameter(property = "buildx.registries")
+  protected List<String> registries;
+
+  /** The os/arch of the built image */
+  @Parameter(property = "buildx.platforms")
+  protected List<String> platforms;
+
+  /** The name of an existing builder to use */
+  @Parameter(property = "buildx.builder", defaultValue = BUILDX_MAVEN)
+  protected String builder;
+
+  /** Load resulting image into local image cache */
+  @Parameter(property = "buildx.load", defaultValue = "true")
+  boolean load;
 
   @Parameter(defaultValue = "${session}", required = true, readonly = true)
   private MavenSession session;
@@ -150,25 +157,15 @@ public class ImageBuild extends Containerfile {
 
     String ctxDir = ctxDir();
     Map<String, String> additional = contexts();
-    BuildxBuild buildCmd =
-        new BuildxBuild(this, builder)
-            .addPlatformsAndImage(platforms, image)
-            .addContainerfileAndCtx(containerFile, ctxDir, additional);
-    executeCommand(buildCmd, true);
-
+    BuildxBuild buildCmd = new BuildxBuild(this, builder);
     if (load) {
-      loadImage(builder, ctxDir, additional);
+      buildCmd
+          .addPlatformAndImage(nativePlatform(), registries, image)
+          .addParameter("--output", "type=docker");
+    } else {
+      buildCmd.addPlatformsAndImage(platforms, registries, image);
     }
-  }
-
-  private void loadImage(String builderName, String ctxDir, Map<String, String> additional)
-      throws MojoExecutionException {
-    BuildxBuild buildCmd =
-        new BuildxBuild(this, builderName)
-            .addPlatformAndImage(nativePlatform(), image)
-            .addParameter("--output", "type=docker")
-            .addContainerfileAndCtx(containerFile, ctxDir, additional);
-
+    buildCmd.addContainerfileAndCtx(containerFile, ctxDir, additional);
     executeCommand(buildCmd, true);
   }
 }
