@@ -60,7 +60,7 @@
 
   <properties>
     <git-code-format-maven-plugin.version>5.1</git-code-format-maven-plugin.version>
-    <javadoc-plugin.version>3.5.0</javadoc-plugin.version>
+    <javadoc-plugin.version>3.11.2</javadoc-plugin.version>
     <lombok.version>1.18.30</lombok.version>
 
     <maven.compiler.release>17</maven.compiler.release>
@@ -177,11 +177,10 @@
 
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>${javadoc-plugin.version}</version>
           <configuration>
             <links>
-              <link>https://devdocs.io/openjdk~11/</link>
-              <link>http://commons.apache.org/fileupload/apidocs/</link>
+              <link>https://devdocs.io/openjdk~17/</link>
             </links>
           </configuration>
         </plugin>
@@ -433,7 +432,7 @@
 
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>${javadoc-plugin.version}</version>
         <reportSets>
           <reportSet>
             <id>default</id>
