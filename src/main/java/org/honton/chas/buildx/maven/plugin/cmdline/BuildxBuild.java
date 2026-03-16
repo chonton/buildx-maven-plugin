@@ -13,8 +13,10 @@ public class BuildxBuild extends Buildx<BuildxBuild> {
   public BuildxBuild(ImageBuild goal, String builderName) {
     super(goal);
     addCmd("build");
-    addParameter("--builder", builderName);
-    if (goal.provenance != null) {
+    if (!isPodman) {
+      addParameter("--builder", builderName);
+    }
+    if (goal.provenance != null && !"false".equals(goal.provenance)) {
       addParameter("--provenance", goal.provenance);
     }
     if (goal.sbom) {
