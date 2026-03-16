@@ -8,7 +8,7 @@ import org.honton.chas.buildx.maven.plugin.config.ConnectionCfg;
 
 public class Cmd<T extends Cmd<?>> {
   @Getter protected final List<String> command;
-  protected final boolean isPodman;
+  @Getter protected final boolean isPodman;
 
   public Cmd(String cli) {
     command = new ArrayList<>();

@@ -21,10 +21,11 @@ public class ImagePush extends ImageBuild {
       getLog().info("skipping image push");
     } else {
       BuildxBuild buildCmd =
-          new BuildxBuild(this, builder)
-              .addPlatformsAndImage(platforms, registries, image)
-              .addParameter("--output", "type=registry")
-              .addContainerfileAndCtx(containerFile, ctxDir(), contexts());
+          new BuildxBuild(this, builder).addPlatformsAndImage(platforms, registries, image);
+      if (!buildCmd.isPodman()) {
+        buildCmd.addParameter("--output", "type=registry");
+      }
+      buildCmd.addContainerfileAndCtx(containerFile, ctxDir(), contexts());
       executeCommand(buildCmd, true);
     }
   }

@@ -4,7 +4,7 @@
 
   <groupId>org.honton.chas</groupId>
   <artifactId>buildx-maven-plugin</artifactId>
-  <version>0.0.10</version>
+  <version>0.0.11</version>
   <packaging>maven-plugin</packaging>
 
   <name>Image Builder Maven Plugin</name>
@@ -63,7 +63,7 @@
     <javadoc-plugin.version>3.5.0</javadoc-plugin.version>
     <lombok.version>1.18.30</lombok.version>
 
-    <maven.compiler.release>11</maven.compiler.release>
+    <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
     <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
 

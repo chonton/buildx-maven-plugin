@@ -146,12 +146,12 @@ public class ImageBuild extends Containerfile {
 
   @Override
   protected void doExecute() throws MojoExecutionException {
-    if (BUILDX_MAVEN.equals(builder)) {
-      Buildx<?> createCmd =
-          new Buildx<>(this)
-              .addCmd("create")
-              .addParameter("--driver", "docker-container")
-              .addParameter("--name", builder);
+    Buildx<?> createCmd = new Buildx<>(this);
+    if (BUILDX_MAVEN.equals(builder) && !createCmd.isPodman()) {
+      createCmd
+          .addCmd("create")
+          .addParameter("--driver", "docker-container")
+          .addParameter("--name", builder);
       executeCommand(createCmd, false);
     }
 
@@ -159,9 +159,10 @@ public class ImageBuild extends Containerfile {
     Map<String, String> additional = contexts();
     BuildxBuild buildCmd = new BuildxBuild(this, builder);
     if (load) {
-      buildCmd
-          .addPlatformAndImage(nativePlatform(), registries, image)
-          .addParameter("--output", "type=docker");
+      buildCmd.addPlatformAndImage(nativePlatform(), registries, image);
+      if (!buildCmd.isPodman()) {
+        buildCmd.addParameter("--output", "type=docker");
+      }
     } else {
       buildCmd.addPlatformsAndImage(platforms, registries, image);
     }

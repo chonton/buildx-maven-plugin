@@ -139,7 +139,7 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
       <plugin>
         <groupId>org.honton.chas</groupId>
         <artifactId>buildx-maven-plugin</artifactId>
-        <version>0.0.10</version>
+        <version>0.0.11</version>
       </plugin>
     </plugins>
   </pluginManagement>

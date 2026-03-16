@@ -20,6 +20,6 @@ public abstract class Containerfile extends ImageGoal {
   }
 
   protected String defaultContainerFile() {
-    return cli.endsWith("podman") ? "Containerfile" : "Dockerfile";
+    return cli.contains("podman") ? "Containerfile" : "Dockerfile";
   }
 }
