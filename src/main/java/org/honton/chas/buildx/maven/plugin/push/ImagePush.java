@@ -6,6 +6,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.honton.chas.buildx.maven.plugin.buildx.ImageBuild;
 import org.honton.chas.buildx.maven.plugin.cmdline.BuildxBuild;
+import org.honton.chas.buildx.maven.plugin.cmdline.Cmd;
 
 /** Push image to registry */
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
@@ -20,13 +21,24 @@ public class ImagePush extends ImageBuild {
     if (skipPush) {
       getLog().info("skipping image push");
     } else {
-      BuildxBuild buildCmd =
-          new BuildxBuild(this, builder).addPlatformsAndImage(platforms, registries, image);
-      if (!buildCmd.isPodman()) {
-        buildCmd.addParameter("--output", "type=registry");
+      BuildxBuild buildCmd = new BuildxBuild(this, builder);
+      if (buildCmd.isPodman()) {
+        BuildxBuild.iterateImageTags(
+            registries,
+            image,
+            fqin -> {
+              Cmd<?> pushCmd = new Cmd<>(this).addCmd("image").addCmd("push").addParameter(fqin);
+              executeCommand(pushCmd, true);
+            });
+
+      } else {
+        buildCmd.addParameter("--push");
+        buildCmd.addParameters("--platform", Cmd.allPlatforms(platforms));
+        buildCmd.addImages(registries, image, "--tag");
+        buildCmd.addParameters("--output", "type=registry");
+        buildCmd.addContainerfileAndCtx(containerFile, ctxDir(), contexts());
+        executeCommand(buildCmd, true);
       }
-      buildCmd.addContainerfileAndCtx(containerFile, ctxDir(), contexts());
-      executeCommand(buildCmd, true);
     }
   }
 }

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -17,6 +16,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.honton.chas.buildx.maven.plugin.Containerfile;
 import org.honton.chas.buildx.maven.plugin.cmdline.Buildx;
 import org.honton.chas.buildx.maven.plugin.cmdline.BuildxBuild;
+import org.honton.chas.buildx.maven.plugin.cmdline.Cmd;
 
 /** Create a container image from the Containerfile directions and files from context */
 @Mojo(name = "build", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true)
@@ -57,12 +57,9 @@ public class ImageBuild extends Containerfile {
   @Parameter(property = "buildx.builder", defaultValue = BUILDX_MAVEN)
   protected String builder;
 
-  /** Load resulting image into local image cache */
+  /** Load resulting image into local image cache (ignored for podman) */
   @Parameter(property = "buildx.load", defaultValue = "true")
   boolean load;
-
-  @Parameter(defaultValue = "${session}", required = true, readonly = true)
-  private MavenSession session;
 
   @SneakyThrows
   static String imageNameHash(String image) {
@@ -111,27 +108,6 @@ public class ImageBuild extends Containerfile {
     return sb.toString();
   }
 
-  static String nativePlatform() {
-    return operatingSystem() + "/" + architecture();
-  }
-
-  static String operatingSystem() {
-    String osName = System.getProperty("os.name").toLowerCase();
-    return osName.contains("win") ? "windows" : "linux";
-  }
-
-  static String architecture() {
-    String osArch = System.getProperty("os.arch");
-    switch (osArch) {
-      case "aarch64":
-        return "arm64";
-      case "x86_64":
-        return "amd64";
-      default:
-        return osArch;
-    }
-  }
-
   protected String ctxDir() {
     return shortestPath(Path.of(context));
   }
@@ -146,26 +122,46 @@ public class ImageBuild extends Containerfile {
 
   @Override
   protected void doExecute() throws MojoExecutionException {
-    Buildx<?> createCmd = new Buildx<>(this);
-    if (BUILDX_MAVEN.equals(builder) && !createCmd.isPodman()) {
-      createCmd
-          .addCmd("create")
-          .addParameter("--driver", "docker-container")
-          .addParameter("--name", builder);
-      executeCommand(createCmd, false);
-    }
-
     String ctxDir = ctxDir();
     Map<String, String> additional = contexts();
     BuildxBuild buildCmd = new BuildxBuild(this, builder);
-    if (load) {
-      buildCmd.addPlatformAndImage(nativePlatform(), registries, image);
-      if (!buildCmd.isPodman()) {
-        buildCmd.addParameter("--output", "type=docker");
+
+    if (buildCmd.isPodman()) {
+      String allPlatforms = Cmd.allPlatforms(platforms);
+      boolean isMultiPlatform = allPlatforms.indexOf(',') >= 0;
+      if (isMultiPlatform) {
+        Cmd.iterateImageTags(
+            registries,
+            image,
+            fqin -> {
+              Cmd<?> existsCmd =
+                  new Cmd<>(this).addCmd("manifest").addCmd("exists").addParameter(fqin);
+              int rc = executeCommand(existsCmd, false);
+              if (rc != 0) {
+                Cmd<?> createCmd =
+                    new Cmd<>(this).addCmd("manifest").addParameter("create").addParameter(fqin);
+                executeCommand(createCmd, true);
+              }
+            });
       }
+      buildCmd.addParameters("--platform", allPlatforms);
+      buildCmd.addImages(registries, image, isMultiPlatform ? "--manifest" : "--tag");
     } else {
-      buildCmd.addPlatformsAndImage(platforms, registries, image);
+      if (BUILDX_MAVEN.equals(builder)) {
+        Buildx<?> createCmd =
+            new Buildx<>(this)
+                .addCmd("create")
+                .addParameters("--driver", "docker-container")
+                .addParameters("--name", builder);
+        executeCommand(createCmd, false);
+      }
+
+      buildCmd.addParameters(
+          "--platform", load ? Cmd.nativePlatform() : Cmd.allPlatforms(platforms));
+      buildCmd.addImages(registries, image, "--tag");
+      buildCmd.addParameters("--output", "type=docker");
     }
+
     buildCmd.addContainerfileAndCtx(containerFile, ctxDir, additional);
     executeCommand(buildCmd, true);
   }

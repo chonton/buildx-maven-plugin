@@ -43,10 +43,8 @@ public class RegistryLogin extends ImageGoal {
     Cmd<?> command =
         new Cmd<>(this)
             .addCmd("login")
-            .addParameter("--username")
-            .addParameter(server.getUsername())
-            .addParameter("--password-stdin")
-            .addParameter(registry);
+            .addParameters("--username", server.getUsername())
+            .addParameters("--password-stdin", registry);
     executeCommand(command, server.getPassword(), true);
   }
 
@@ -59,9 +57,8 @@ public class RegistryLogin extends ImageGoal {
     ensure(server::getUsername, server::setUsername, username);
 
     if (ensure(server::getPassword, server::setPassword, password)) {
-      if (securityDispatcher instanceof DefaultSecDispatcher) {
-        ((DefaultSecDispatcher) securityDispatcher)
-            .setConfigurationFile("~/.m2/settings-security.xml");
+      if (securityDispatcher instanceof DefaultSecDispatcher defaultSecDispatcher) {
+        defaultSecDispatcher.setConfigurationFile("~/.m2/settings-security.xml");
       }
       try {
         server.setPassword(securityDispatcher.decrypt(server.getPassword()));
