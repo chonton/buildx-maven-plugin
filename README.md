@@ -110,8 +110,8 @@ default to the **package** phase. This goal executes `docker build buildx`.
 
 ## Push Goal
 
-The [push](https://chonton.github.io/buildx-maven-plugin/push-mojo.html) goal binds by
-default to the **deploy** phase. This goal uses `docker buildx` to push an image to its registry.
+The [push](https://chonton.github.io/buildx-maven-plugin/push-mojo.html) goal binds by default to the **deploy** phase.
+This goal uses `docker buildx` (or `podman manifest push`) to push an image to its registry.
 
 ### Push Configuration
 
@@ -139,7 +139,7 @@ default to the **deploy** phase. This goal uses `docker buildx` to push an image
       <plugin>
         <groupId>org.honton.chas</groupId>
         <artifactId>buildx-maven-plugin</artifactId>
-        <version>0.0.12</version>
+        <version>0.0.13</version>
       </plugin>
     </plugins>
   </pluginManagement>

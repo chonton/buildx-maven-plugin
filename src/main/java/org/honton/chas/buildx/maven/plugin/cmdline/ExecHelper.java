@@ -17,7 +17,7 @@ public class ExecHelper {
   public ExecHelper(ImageGoal goal) {
     Log log = goal.getLog();
     infoLine =
-        (lineText) -> {
+        lineText -> {
           if (lineText != null) {
             log.info(lineText);
           }
@@ -46,7 +46,10 @@ public class ExecHelper {
         throw new MojoExecutionException("command exited with error - " + exitCode);
       }
       return exitCode;
-    } catch (IOException | InterruptedException ex) {
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      throw new MojoExecutionException(ex);
+    } catch (IOException ex) {
       throw new MojoExecutionException(ex);
     }
   }

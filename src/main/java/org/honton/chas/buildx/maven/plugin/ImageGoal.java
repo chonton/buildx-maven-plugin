@@ -34,7 +34,10 @@ public abstract class ImageGoal extends AbstractMojo implements ConnectionCfg {
       try {
         pwd = Path.of("").toAbsolutePath();
         doExecute();
-      } catch (IOException | ExecutionException | InterruptedException e) {
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new MojoFailureException(e.getMessage(), e);
+      } catch (IOException | ExecutionException e) {
         throw new MojoFailureException(e.getMessage(), e);
       }
     }

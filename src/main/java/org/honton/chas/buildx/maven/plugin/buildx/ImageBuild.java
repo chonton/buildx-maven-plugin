@@ -127,42 +127,49 @@ public class ImageBuild extends Containerfile {
     BuildxBuild buildCmd = new BuildxBuild(this, builder);
 
     if (buildCmd.isPodman()) {
-      String allPlatforms = Cmd.allPlatforms(platforms);
-      boolean isMultiPlatform = allPlatforms.indexOf(',') >= 0;
-      if (isMultiPlatform) {
-        Cmd.iterateImageTags(
-            registries,
-            image,
-            fqin -> {
-              Cmd<?> existsCmd =
-                  new Cmd<>(this).addCmd("manifest").addCmd("exists").addParameter(fqin);
-              int rc = executeCommand(existsCmd, false);
-              if (rc != 0) {
-                Cmd<?> createCmd =
-                    new Cmd<>(this).addCmd("manifest").addParameter("create").addParameter(fqin);
-                executeCommand(createCmd, true);
-              }
-            });
-      }
-      buildCmd.addParameters("--platform", allPlatforms);
-      buildCmd.addImages(registries, image, isMultiPlatform ? "--manifest" : "--tag");
+      podmanBuild(buildCmd);
     } else {
-      if (BUILDX_MAVEN.equals(builder)) {
-        Buildx<?> createCmd =
-            new Buildx<>(this)
-                .addCmd("create")
-                .addParameters("--driver", "docker-container")
-                .addParameters("--name", builder);
-        executeCommand(createCmd, false);
-      }
-
-      buildCmd.addParameters(
-          "--platform", load ? Cmd.nativePlatform() : Cmd.allPlatforms(platforms));
-      buildCmd.addImages(registries, image, "--tag");
-      buildCmd.addParameters("--output", "type=docker");
+      dockerBuild(buildCmd);
     }
 
     buildCmd.addContainerfileAndCtx(containerFile, ctxDir, additional);
     executeCommand(buildCmd, true);
+  }
+
+  private void podmanBuild(BuildxBuild buildCmd) throws MojoExecutionException {
+    String allPlatforms = Cmd.allPlatforms(platforms);
+    boolean isMultiPlatform = allPlatforms.indexOf(',') >= 0;
+    if (isMultiPlatform) {
+      Cmd.iterateImageTags(
+          registries,
+          image,
+          fqin -> {
+            Cmd<?> existsCmd =
+                new Cmd<>(this).addCmd("manifest").addCmd("exists").addParameter(fqin);
+            int rc = executeCommand(existsCmd, false);
+            if (rc != 0) {
+              Cmd<?> createCmd =
+                  new Cmd<>(this).addCmd("manifest").addParameter("create").addParameter(fqin);
+              executeCommand(createCmd, true);
+            }
+          });
+    }
+    buildCmd.addParameters("--platform", allPlatforms);
+    buildCmd.addImages(registries, image, isMultiPlatform ? "--manifest" : "--tag");
+  }
+
+  private void dockerBuild(BuildxBuild buildCmd) throws MojoExecutionException {
+    if (BUILDX_MAVEN.equals(builder)) {
+      Buildx<?> createCmd =
+          new Buildx<>(this)
+              .addCmd("create")
+              .addParameters("--driver", "docker-container")
+              .addParameters("--name", builder);
+      executeCommand(createCmd, false);
+    }
+
+    buildCmd.addParameters("--platform", load ? Cmd.nativePlatform() : Cmd.allPlatforms(platforms));
+    buildCmd.addImages(registries, image, "--tag");
+    buildCmd.addParameters("--output", "type=docker");
   }
 }

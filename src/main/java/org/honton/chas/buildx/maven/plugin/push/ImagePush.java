@@ -23,22 +23,29 @@ public class ImagePush extends ImageBuild {
     } else {
       BuildxBuild buildCmd = new BuildxBuild(this, builder);
       if (buildCmd.isPodman()) {
-        BuildxBuild.iterateImageTags(
-            registries,
-            image,
-            fqin -> {
-              Cmd<?> pushCmd = new Cmd<>(this).addCmd("image").addCmd("push").addParameter(fqin);
-              executeCommand(pushCmd, true);
-            });
-
+        podmanPush();
       } else {
-        buildCmd.addParameter("--push");
-        buildCmd.addParameters("--platform", Cmd.allPlatforms(platforms));
-        buildCmd.addImages(registries, image, "--tag");
-        buildCmd.addParameters("--output", "type=registry");
-        buildCmd.addContainerfileAndCtx(containerFile, ctxDir(), contexts());
-        executeCommand(buildCmd, true);
+        dockerPush(buildCmd);
       }
     }
+  }
+
+  private void podmanPush() throws MojoExecutionException {
+    Cmd.iterateImageTags(
+        registries,
+        image,
+        fqin -> {
+          Cmd<?> pushCmd = new Cmd<>(this).addCmd("manifest").addCmd("push").addParameter(fqin);
+          executeCommand(pushCmd, true);
+        });
+  }
+
+  private void dockerPush(BuildxBuild buildCmd) throws MojoExecutionException {
+    buildCmd.addParameter("--push");
+    buildCmd.addParameters("--platform", Cmd.allPlatforms(platforms));
+    buildCmd.addImages(registries, image, "--tag");
+    buildCmd.addParameters("--output", "type=registry");
+    buildCmd.addContainerfileAndCtx(containerFile, ctxDir(), contexts());
+    executeCommand(buildCmd, true);
   }
 }
