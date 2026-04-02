@@ -5,4 +5,5 @@ org.honton.chas.buildx.maven.plugin.cmdline
 org.honton.chas.buildx.maven.plugin.config
 org.honton.chas.buildx.maven.plugin.containerfile
 org.honton.chas.buildx.maven.plugin.login
+org.honton.chas.buildx.maven.plugin.probe
 org.honton.chas.buildx.maven.plugin.push
