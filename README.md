@@ -18,6 +18,12 @@ plugin's [containerfile](#containerfile-goal) and [build](#build-goal) goals.
 Plugin reports available at
 [plugin info](https://chonton.github.io/buildx-maven-plugin/plugin-info.html).
 
+## Probe Goal
+
+The [probe](https://chonton.github.io/buildx-maven-plugin/probe-mojo.html) goal binds by default to
+the **initial** phase. This goal executes `docker -v`; if command fails or result contains the
+string `podman`, then user property buildx.cli is set to `podman`.
+
 ## Login Goal
 
 The [login](https://chonton.github.io/buildx-maven-plugin/login-mojo.html) goal binds by default to
@@ -110,7 +116,8 @@ default to the **package** phase. This goal executes `docker build buildx`.
 
 ## Push Goal
 
-The [push](https://chonton.github.io/buildx-maven-plugin/push-mojo.html) goal binds by default to the **deploy** phase.
+The [push](https://chonton.github.io/buildx-maven-plugin/push-mojo.html) goal binds by default to
+the **deploy** phase.
 This goal uses `docker buildx` (or `podman manifest push`) to push an image to its registry.
 
 ### Push Configuration
@@ -139,7 +146,7 @@ This goal uses `docker buildx` (or `podman manifest push`) to push an image to i
       <plugin>
         <groupId>org.honton.chas</groupId>
         <artifactId>buildx-maven-plugin</artifactId>
-        <version>0.0.13</version>
+        <version>0.0.14</version>
       </plugin>
     </plugins>
   </pluginManagement>

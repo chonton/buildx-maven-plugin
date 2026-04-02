@@ -6,15 +6,15 @@ import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.honton.chas.buildx.maven.plugin.ImageGoal;
 
 public class ExecHelper {
 
   private final Consumer<String> infoLine;
 
-  public ExecHelper(ImageGoal goal) {
+  public ExecHelper(AbstractMojo goal) {
     Log log = goal.getLog();
     infoLine =
         lineText -> {

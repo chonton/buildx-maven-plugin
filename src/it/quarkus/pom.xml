@@ -19,6 +19,14 @@
         <groupId>org.honton.chas</groupId>
         <artifactId>buildx-maven-plugin</artifactId>
         <executions>
+
+          <execution>
+            <id>set-cli</id>
+            <goals>
+              <goal>probe</goal>
+            </goals>
+          </execution>
+
           <execution>
             <id>create-containerfile</id>
             <goals>
@@ -63,6 +71,7 @@
               <user>nobody</user>
             </configuration>
           </execution>
+
         </executions>
       </plugin>
 
