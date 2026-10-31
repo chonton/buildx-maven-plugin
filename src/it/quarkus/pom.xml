@@ -33,45 +33,22 @@
               <goal>containerfile</goal>
             </goals>
             <configuration>
-              <from>registry.access.redhat.com/ubi8/openjdk-11:1.15</from>
-              <layers>
-                <layer>
-                  <chown>nobody</chown>
-                  <srcs>
-                    <src>target/quarkus-app/lib/</src>
-                  </srcs>
-                  <dest>/deployments/lib/</dest>
-                </layer>
-                <layer>
-                  <chown>nobody</chown>
-                  <srcs>
-                    <src>target/quarkus-app/*.jar</src>
-                  </srcs>
-                  <dest>/deployments/</dest>
-                </layer>
-                <layer>
-                  <chown>nobody</chown>
-                  <srcs>
-                    <src>target/quarkus-app/app/</src>
-                  </srcs>
-                  <dest>/deployments/app/</dest>
-                </layer>
-                <layer>
-                  <chown>nobody</chown>
-                  <srcs>
-                    <src>target/quarkus-app/quarkus/</src>
-                  </srcs>
-                  <dest>/deployments/quarkus/</dest>
-                </layer>
-              </layers>
-              <expose>
-                <port>8080</port>
-              </expose>
-              <workdir>/work/</workdir>
+              <from>alpine:3.24.1</from>
               <user>nobody</user>
             </configuration>
           </execution>
 
+          <execution>
+            <id>build-java-based-container</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <image>dev/${project.artifactId}:${project.version}</image>
+                  <platforms>linux/amd64,linux/arm64</platforms>
+              <sbom>max</sbom>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 

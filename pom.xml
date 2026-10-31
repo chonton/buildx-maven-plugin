@@ -187,12 +187,12 @@
 
         <plugin>
           <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.9.0</version>
+          <version>3.12.0</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.4.3</version>
+          <version>3.5.0</version>
         </plugin>
 
         <plugin>
@@ -202,7 +202,7 @@
 
         <plugin>
           <artifactId>maven-scm-publish-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.3.0</version>
         </plugin>
 
         <plugin>
@@ -212,12 +212,12 @@
 
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.3.1</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.5</version>
         </plugin>
 
         <plugin>
@@ -261,8 +261,8 @@
               <replacementType>file-contents</replacementType>
               <baseDir>target/site/</baseDir>
               <fileMask>.html</fileMask>
-              <findRegex><![CDATA[(org\.honton\.chas\.podman\.maven\.plugin\.config\.)?(\p{L}+)Config]]></findRegex>
-              <replaceValue><![CDATA[<a href="./apidocs/org/honton/chas/podman/maven/plugin/config/$2Config.html">$2Config</a>]]></replaceValue>
+              <findRegex><![CDATA[(org\.honton\.chas\.buildx\.maven\.plugin\.config\.)?(\p{L}+)Config]]></findRegex>
+              <replaceValue><![CDATA[<a href="./apidocs/org/honton/chas/buildx/maven/plugin/config/$2Config.html">$2Config</a>]]></replaceValue>
             </configuration>
           </execution>
           <execution>
